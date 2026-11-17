@@ -1572,7 +1572,7 @@ if('serviceWorker' in navigator)addEventListener('load',function(){
   });
   /* look for a new version whenever the app comes back to the front */
   document.addEventListener('visibilitychange',function(){
-    if(document.visibilityState==='visible')navigator.serviceWorker.getRegistration().then(function(r){if(r)r.update()}).catch(function(){});
+    if(document.visibilityState==='visible')navigator.serviceWorker.getRegistration().then(function(r){if(r)r.update().catch(function(){})}).catch(function(){});
   });
 });
 </script>
