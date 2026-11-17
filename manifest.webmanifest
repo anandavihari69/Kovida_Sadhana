@@ -1,0 +1,25 @@
+{
+ "name": "कोविदसाधना · Kovida Sādhanā",
+ "short_name": "Kovida",
+ "description": "Topic-wise Kovida exam reader (Sanskrit + Telugu) with a word look-up",
+ "start_url": ".",
+ "scope": ".",
+ "display": "standalone",
+ "lang": "sa",
+ "background_color": "#fbfaf7",
+ "theme_color": "#9a3412",
+ "icons": [
+  {
+   "src": "icons/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icons/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
+}

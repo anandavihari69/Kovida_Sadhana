@@ -1,0 +1,196 @@
+{
+ "batch": "0+1+2+3+5",
+ "total": 27197,
+ "buckets": {
+  "a": {
+   "forms": 2713,
+   "bytes": 2174214
+  },
+  "aa": {
+   "forms": 750,
+   "bytes": 586248
+  },
+  "ai": {
+   "forms": 53,
+   "bytes": 47061
+  },
+  "au": {
+   "forms": 22,
+   "bytes": 18916
+  },
+  "ba": {
+   "forms": 479,
+   "bytes": 394548
+  },
+  "bha": {
+   "forms": 823,
+   "bytes": 626702
+  },
+  "ca": {
+   "forms": 781,
+   "bytes": 624529
+  },
+  "cha": {
+   "forms": 87,
+   "bytes": 64477
+  },
+  "da": {
+   "forms": 1157,
+   "bytes": 916832
+  },
+  "dda": {
+   "forms": 82,
+   "bytes": 65345
+  },
+  "ddha": {
+   "forms": 4,
+   "bytes": 2041
+  },
+  "dha": {
+   "forms": 388,
+   "bytes": 313332
+  },
+  "e": {
+   "forms": 225,
+   "bytes": 191429
+  },
+  "ga": {
+   "forms": 1054,
+   "bytes": 875876
+  },
+  "gha": {
+   "forms": 71,
+   "bytes": 52125
+  },
+  "ha": {
+   "forms": 381,
+   "bytes": 291734
+  },
+  "i": {
+   "forms": 186,
+   "bytes": 158228
+  },
+  "ii": {
+   "forms": 86,
+   "bytes": 69511
+  },
+  "ja": {
+   "forms": 645,
+   "bytes": 525082
+  },
+  "jha": {
+   "forms": 1,
+   "bytes": 408
+  },
+  "ka": {
+   "forms": 2259,
+   "bytes": 1774912
+  },
+  "kha": {
+   "forms": 235,
+   "bytes": 189693
+  },
+  "la": {
+   "forms": 555,
+   "bytes": 460915
+  },
+  "ma": {
+   "forms": 1323,
+   "bytes": 1030607
+  },
+  "na": {
+   "forms": 1387,
+   "bytes": 1138523
+  },
+  "nga": {
+   "forms": 7,
+   "bytes": 4613
+  },
+  "nna": {
+   "forms": 19,
+   "bytes": 12045
+  },
+  "o": {
+   "forms": 17,
+   "bytes": 10514
+  },
+  "pa": {
+   "forms": 2792,
+   "bytes": 2313733
+  },
+  "pha": {
+   "forms": 48,
+   "bytes": 40442
+  },
+  "ra": {
+   "forms": 701,
+   "bytes": 567298
+  },
+  "ri": {
+   "forms": 43,
+   "bytes": 30399
+  },
+  "sa": {
+   "forms": 2403,
+   "bytes": 1934245
+  },
+  "sha": {
+   "forms": 1074,
+   "bytes": 835041
+  },
+  "ssa": {
+   "forms": 61,
+   "bytes": 43450
+  },
+  "ta": {
+   "forms": 936,
+   "bytes": 740096
+  },
+  "tha": {
+   "forms": 4,
+   "bytes": 2252
+  },
+  "tta": {
+   "forms": 19,
+   "bytes": 11778
+  },
+  "u": {
+   "forms": 647,
+   "bytes": 517220
+  },
+  "uu": {
+   "forms": 71,
+   "bytes": 54088
+  },
+  "va": {
+   "forms": 2107,
+   "bytes": 1699488
+  },
+  "ya": {
+   "forms": 501,
+   "bytes": 397459
+  }
+ },
+ "kinds": {
+  "avyaya": 248,
+  "kridanta": 3488,
+  "nijanta": 1,
+  "samasa": 2748,
+  "sandhi": 1248,
+  "sannanta": 1,
+  "subanta": 12411,
+  "taddhitanta": 38,
+  "tinanta": 6341,
+  "upasarga": 21,
+  "abbrev": 240,
+  "dhatu": 397,
+  "pronoun": 1,
+  "stem": 13,
+  "conditional": 1
+ },
+ "tiers": {
+  "book": 2481,
+  "derived": 22109,
+  "authored": 2607
+ }
+}
