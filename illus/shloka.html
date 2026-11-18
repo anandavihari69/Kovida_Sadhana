@@ -99,4 +99,48 @@ tr.jt-hit td,tr.jt-hit th{animation:jtflash 1.4s ease-out}
   window.addEventListener('scroll', function(){ up.style.display = window.scrollY > 400 ? 'block' : 'none'; }, {passive:true});
 })();
 </script>
+<!-- phone layout: injected by build.py into every कोष्ठकम् page (with jumptabs.html).
+     On narrow screens each table row becomes a card: every cell on its own line, headed by its column name
+     (taken from the table's thead), so nothing has to be scrolled sideways. -->
+<style>
+@media (max-width:700px){
+  body{padding:8px 10px 70px !important;font-size:15px}
+  h1{font-size:20px !important;line-height:1.3}
+  table{width:100% !important;min-width:0 !important;table-layout:auto !important;border-spacing:0 !important}
+  colgroup,thead{display:none !important}
+  table,tbody,tr,td,tbody th{display:block !important;width:auto !important;max-width:none !important}
+  tbody tr{border:1px solid var(--c,#c9c4b8);border-left-width:5px;border-radius:10px;margin:0 0 10px;padding:4px 10px 6px;background:rgba(255,255,255,.55)}
+  tbody tr.grp{border:0;padding:6px 2px 0;margin:14px 0 6px;background:none}
+  tbody tr.grp td,tbody tr.grp th{font-size:17px;padding:4px 8px !important;border-radius:8px}
+  td,tbody th{border:0 !important;padding:5px 0 !important;position:static !important;text-align:left !important}
+  td+td,tbody th+td{border-top:1px dashed rgba(0,0,0,.12) !important}
+  td[data-l]::before,tbody th[data-l]::before{content:attr(data-l);display:block;font-size:11.5px;font-weight:400;color:var(--c,#8a8577);opacity:.9;margin-bottom:1px}
+  td:empty{display:none !important}
+  nav.jt{position:sticky;top:0;z-index:4;background:inherit;flex-wrap:nowrap !important;overflow-x:auto;padding:4px 0;-webkit-overflow-scrolling:touch}
+  nav.jt a{white-space:nowrap;flex:none}
+  nav.jt.rows{position:static}
+  .legend{flex-wrap:wrap}
+  .sub span{display:inline-block}
+}
+</style>
+<script>
+(function(){
+  Array.prototype.slice.call(document.querySelectorAll('table')).forEach(function(t){
+    var hr = t.querySelector('thead tr'); if(!hr) return;
+    var lab = [];
+    Array.prototype.slice.call(hr.children).forEach(function(th){
+      var n = parseInt(th.getAttribute('colspan') || '1', 10);
+      for(var i = 0; i < n; i++) lab.push(th.textContent.trim());
+    });
+    Array.prototype.slice.call(t.querySelectorAll('tbody tr')).forEach(function(tr){
+      if(tr.classList.contains('grp')) return;
+      var c = 0;
+      Array.prototype.slice.call(tr.children).forEach(function(td){
+        if(lab[c] && !td.hasAttribute('data-l')) td.setAttribute('data-l', lab[c]);
+        c += parseInt(td.getAttribute('colspan') || '1', 10);
+      });
+    });
+  });
+})();
+</script>
 </body></html>
