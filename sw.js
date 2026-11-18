@@ -3,6 +3,7 @@ var VERSION = '7d372c53a8';
 var SHELL = 'kovida-shell-' + VERSION;
 var KOSHA = 'kovida-kosha';
 var FONTS = 'kovida-fonts';
+var ILLUS = 'kovida-illus';
 var PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {
@@ -36,6 +37,13 @@ function swr(e, name, prune) {
   e.waitUntil(net.catch(function () {}));
   return caches.open(name).then(function (c) { return c.match(req) }).then(function (hit) { return hit || net });
 }
+/* network first (fresh after an update), the cached copy when offline */
+function netFirst(req, name) {
+  return fetch(req).then(function (r) {
+    if (r && r.ok) { var copy = r.clone(); caches.open(name).then(function (c) { c.put(req, copy) }); }
+    return r;
+  }).catch(function () { return caches.open(name).then(function (c) { return c.match(req, { ignoreSearch: true }) }); });
+}
 self.addEventListener('fetch', function (e) {
   var req = e.request;
   if (req.method !== 'GET') return;
@@ -43,6 +51,7 @@ self.addEventListener('fetch', function (e) {
   if (url.origin === location.origin) {
     var scope = new URL(self.registration.scope).pathname;
     if (url.pathname.indexOf(scope + 'kosha/') === 0) e.respondWith(swr(e, KOSHA, true));
+    else if (url.pathname.indexOf(scope + 'illus/') === 0) e.respondWith(netFirst(req, ILLUS));   /* illustration pages: their own file, never the shell */
     else if (req.mode === 'navigate' || PRECACHE.some(function (p) { return url.pathname === new URL(p, self.registration.scope).pathname }))
       e.respondWith(caches.open(SHELL).then(function (c) {
         return c.match(req.mode === 'navigate' ? 'index.html' : req, { ignoreSearch: true });
