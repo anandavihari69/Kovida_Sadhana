@@ -2085,25 +2085,33 @@ const stack=[]; let goingBack=false, prevHash=location.hash;
 const pqd=JSON.parse(lsGet(LS('pqd'))||'{}');
 const pqKey=it=>it.g+'|'+it.text.replace(/<[^>]+>/g,'').replace(/[\s।॥!?,.:;'"\-–]/g,'').replace(/ऽ/g,'');
 st.ptm=lsGet(LS('ptm'))||'f'; st.pth=lsGet(LS('pth'))==='1';
-const ptIn=(it,g,sub)=>it.g===g&&(!sub||it.ts===sub||(sub==='_'&&!(it.ts||'').startsWith(g+'/')));
+// सूक्तयः: a topic of their own in the papers' by-topic view only (Charan, 2026-11-21). The data keeps them in shloka/pada (it.g='shloka'),
+// so the विषयाः pages, the marks analysis, flashcards, quiz and the ✓ keys (pqKey uses it.g) are unchanged.
+const PT_VG=[{id:'sukti',sa:'सूक्तयः',te:'సూక్తులు',after:'shloka',topic:'sukti',from:'shloka',subs:[]}], PT_SA={'shloka/pada':['पदविवरणम्, पाठप्रश्नाः','పదవివరణ, పాఠ ప్రశ్నలు']};
+D.papers.forEach(p=>p.sections.forEach(s=>PT_VG.forEach(v=>{ if(s.topic===v.topic) s.items.forEach(it=>{ if(it.g===v.from) it.vg=v.id; }); })));
+if(typeof ICP==='object'&&!ICP.sukti) ICP.sukti='<path d="M5 11h4v6H4v-4c0-3 1.5-5 4-6M15 11h4v6h-5v-4c0-3 1.5-5 4-6"/>';
+const ptTree=()=>D.tree.flatMap(g=>[g,...PT_VG.filter(v=>v.after===g.id)]);
+const ptGrp=g=>GRP[g]||PT_VG.find(v=>v.id===g);
+const ptG=it=>st.view==='papers'?(it.vg||it.g):it.g;
+const ptIn=(it,g,sub)=>ptG(it)===g&&(!sub||it.ts===sub||(sub==='_'&&!(it.ts||'').startsWith(g+'/')));
 function ptAll(g,sub){ const o=[]; D.papers.forEach(p=>p.sections.forEach(s=>s.items.forEach(it=>{ if(ptIn(it,g,sub)) o.push({p,s,it}); }))); return o; }
 function ptStats(g,sub){ const a=ptAll(g,sub), u=new Set(a.map(x=>pqKey(x.it))); let d=0; u.forEach(k=>{if(pqd[k])d++;}); return {n:a.length,u:u.size,d}; }
-function ptSubs(g){ const G=GRP[g], l=G.subs.filter(s=>ptAll(g,s.id).length).map(s=>({id:s.id,sa:s.sa,te:s.te}));
-  if(ptAll(g,'_').length) l.push({id:'_',sa:'अन्ये',te:'ఇతర'}); return l; }
+function ptSubs(g){ const G=ptGrp(g), l=G.subs.map(s=>({id:s.id,sa:(PT_SA[s.id]||[s.sa])[0],te:(PT_SA[s.id]||[,s.te])[1]})).filter(s=>ptAll(g,s.id).length);
+  if(G.subs.length&&ptAll(g,'_').length) l.push({id:'_',sa:'अन्ये',te:'ఇతర'}); return l; }
 const ptBar=(d,u)=>`<span class="ptbar"><i style="width:${u?Math.round(100*d/u):0}%"></i></span>`;
 const ptProgTxt=(x)=>`अभ्यस्तम् ${dn(x.d)} / ${dn(x.u)} · అభ్యాసం చేసినవి`;
 function ptSeg(on){ return `<div class="ptseg"><a href="#papers" class="${on==='y'?'on':''}">वर्षानुसारम्<small>సంవత్సరం వారీగా – పూర్తి పత్రాలు</small></a><a href="#p/t" class="${on==='t'?'on':''}">विषयानुसारम्<small>విషయం వారీగా – అభ్యాసం</small></a></div>`; }
 function ptIndex(){
   return `<h2>प्रश्नपत्राणि – विषयानुसारम्<small>${dn(D.papers.length)} పాత ప్రశ్నపత్రాలలోని అన్ని ప్రశ్నలు, కోవిద విషయాల వారీగా · ✓ నొక్కి అభ్యాసం చేసినవి గుర్తించండి</small></h2>${ptSeg('t')}
-  <div class="ptgrid">${D.tree.map(g=>{ const x=ptStats(g.id); if(!x.n) return '';
+  <div class="ptgrid">${ptTree().map(g=>{ const x=ptStats(g.id); if(!x.n) return '';
     return `<a class="ptc" href="#p/t:${g.id}"><span class="t">${ico(g.id)}<span>${g.sa} <small>${g.te}</small></span></span>
-      <span class="m">${dn(x.n)} प्रश्नाः · ${dn(ptSubs(g.id).length)} उपविषयाः</span>${ptBar(x.d,x.u)}<span class="m">${ptProgTxt(x)}</span></a>`; }).join('')}</div>`;
+      <span class="m">${dn(x.n)} प्रश्नाः${ptSubs(g.id).length>1?' · '+dn(ptSubs(g.id).length)+' उपविषयाः':''}</span>${ptBar(x.d,x.u)}<span class="m">${ptProgTxt(x)}</span></a>`; }).join('')}</div>`;
 }
 function ptItem(it,p,showSub){ const k=pqKey(it);
-  return `<div class="pqi q${pqd[k]?' pd':''}"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button><span class="tx">${it.text}${ansBtn(it)}<br>${p?`<span class="chip">${esc(s_(p))}</span>`:''}${showSub&&it.ts&&SUB[it.ts]?`<a class="chip" href="#p/t:${it.ts}">${SUB[it.ts].sa}</a>`:''}${ansHtml(it)}</span></div>`; }
+  return `<div class="pqi q${pqd[k]?' pd':''}"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button><span class="tx">${it.text}${ansBtn(it)}<br>${p?`<span class="chip">${esc(s_(p))}</span>`:''}${showSub&&!it.vg&&it.ts&&SUB[it.ts]?`<a class="chip" href="#p/t:${it.ts}">${(ptSubs(it.g).find(z=>z.id===it.ts)||SUB[it.ts]).sa}</a>`:''}${ansHtml(it)}</span></div>`; }
 function s_(p){ return PAPER_SHORT(p.id); }
 function ptPage(id){
-  const g=id.split('/')[0], sub=id.includes('/')?(id.split('/')[1]==='_'?'_':id):null, G=GRP[g];
+  const g=id.split('/')[0], sub=id.includes('/')?(id.split('/')[1]==='_'?'_':id):null, G=ptGrp(g);
   if(!G) return ptIndex();
   const subs=ptSubs(g), x=ptStats(g,sub), sx=sub?subs.find(s=>s.id===sub):null;
   const head=`<h2 class="hi">${ico(g,'big')}<span>${G.sa}${sx?' – '+sx.sa:''} – पूर्वप्रश्नाः<small>${G.te}${sx?' – '+sx.te:''} · ${dn(D.papers.length)} పత్రాలలో ${dn(x.n)} ప్రశ్నలు (${dn(x.u)} వేర్వేరు)</small></span></h2>${ptSeg('t')}
@@ -2117,10 +2125,10 @@ function ptPage(id){
       const bySec=[]; its.forEach(o=>{ let b=bySec.find(z=>z.s===o.s); if(!b) bySec.push(b={s:o.s,its:[]}); b.its.push(o.it); });
       return `<div class="card ptyr"><div class="yh"><a href="#p/${p.id}">${PAPER_NAME(p.id)}</a> <span class="chip">${dn(its.length)}</span></div>${bySec.map(b=>`<div class="ins">${esc(b.s.q)}) ${b.s.ins} <span class="mk muted">${esc(b.s.marks)}</span></div>${b.its.map(it=>ptItem(it,null,!sub)).join('')}`).join('')}</div>`; }).join('');
   } else {
-    const list=sub?[sx||{id:sub,sa:'',te:''}]:subs;
-    body=list.map(s=>`${sub?'':`<h3 class="pth3">${s.sa}<small>${s.te} · ${dn(ptAll(g,s.id).length)}</small></h3>`}${pqList(g,s.id)}`).join('');
+    const list=sub?[sx||{id:sub,sa:'',te:''}]:subs.length?subs:[{id:null}];
+    body=list.map(s=>`${sub||!s.id?'':`<h3 class="pth3">${s.sa}<small>${s.te} · ${dn(ptAll(g,s.id).length)}</small></h3>`}${pqList(g,s.id)}`).join('');
   }
-  const gi=D.tree.findIndex(t=>t.id===g), pv=D.tree[gi-1], nx=D.tree[gi+1];
+  const T=ptTree(), gi=T.findIndex(t=>t.id===g), pv=T[gi-1], nx=T[gi+1];
   return `<div class="${st.pth?'pthide':''}">${head}${body}</div><div class="ptnav">${pv?`<a class="chip" href="#p/t:${pv.id}">← ${pv.sa}</a>`:'<span></span>'}<a class="chip" href="#p/t">विषयाः</a>${nx?`<a class="chip" href="#p/t:${nx.id}">${nx.sa} →</a>`:'<span></span>'}</div>`;
 }
 function ptSide(){
@@ -2131,7 +2139,7 @@ function ptSide(){
    ${D.model.map((m,i)=>`<a href="#p/m${i}" class="${st.paper==='m'+i?'on':''}">आदर्शप्रश्नपत्रम् ${dn(i+1)}<small>పుస్తకంలోని నమూనా పత్రం</small></a>`).join('')}
    <div class="sgh">विषयानुसारम् · విషయం వారీగా</div>
    <a href="#p/t" class="${st.paper==='t'?'on':''}">सर्वे विषयाः<small>అన్ని విషయాలు</small></a>
-   ${D.tree.map(g=>{ const x=ptStats(g.id); if(!x.n) return '';
+   ${ptTree().map(g=>{ const x=ptStats(g.id); if(!x.n) return '';
      return `<a href="#p/t:${g.id}" class="${tp===g.id?'on':''}">${g.sa} <small>${g.te} · ${dn(x.n)} · ✓ ${dn(x.d)}/${dn(x.u)}</small></a>`+
        (cg===g.id?ptSubs(g.id).map(s=>{ const h=s.id==='_'?g.id+'/_':s.id; return `<a href="#p/t:${h}" class="ss ${tp===h?'on':''}" style="padding-left:1.6rem">${s.sa}<small>${dn(ptAll(g.id,s.id).length)}</small></a>`; }).join(''):''); }).join('')}</div>`;
 }
