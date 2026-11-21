@@ -451,6 +451,10 @@ aside#side .sgh{font-size:.8rem;color:var(--mut);padding:.6rem .5rem .1rem;text-
 }
 .pqi:has(button.pk){gap:.45rem}
 .pqi:has(button.pk) .cnt{min-width:1.5rem;text-align:left;font-size:.9em}
+.card.sk .skt{font-size:1.15em;font-weight:600;color:var(--gold,var(--acc));margin-bottom:.25rem}
+.card.sk .ska{margin-top:.35rem}
+.card.sk .ska.te{color:var(--mut)}
+.card.sk.pd{opacity:.75}
 </style>
 <meta name="theme-color" content="#11224a">
 <meta name="description" content="Kovida Sādhanā – topic-wise Samskrita Bharati Kovida exam reader in Sanskrit and Telugu, with a word look-up (kosha)">
@@ -2081,18 +2085,43 @@ document.addEventListener('keydown',e=>{ if(st.view!=='fc'||!st.fcid||/INPUT|TEX
 const stack=[]; let goingBack=false, prevHash=location.hash;
 
 /* pqtopic (2026-11-21) */
+// ================================================================ सूक्तयः – a Kovida topic of its own (Charan, 2026-11-21)
+// The papers' sūkti questions (section topic 'sukti', earlier filed under श्लोकाः → पदविवरणम्) move to group 'sukti', sub 'sukti/sukti':
+// own entry in विषयाः (tabs सूक्तिसङ्ग्रहः + पूर्वप्रश्नाः), own row in विश्लेषणम्, own flashcard deck and by-topic card in प्रश्नपत्राणि.
+(function(){
+  const G={id:'sukti',sa:'सूक्तयः',te:'సూక్తులు',subs:[{id:'sukti/sukti',sa:'सूक्तयः – अर्थः, विवरणम्',te:'సూక్తులు – అర్థం, వివరణ'}]};
+  D.tree.splice(D.tree.findIndex(g=>g.id==='shloka')+1,0,G); GRP.sukti=G; G.subs.forEach(x=>{SUB[x.id]=Object.assign(x,{g:'sukti'});});
+  if(SUB['shloka/pada']) Object.assign(SUB['shloka/pada'],{sa:'पदविवरणम्, पाठप्रश्नाः',te:'పదవివరణం, పాఠ ప్రశ్నలు'});
+  const mv={}; D.papers.forEach(p=>p.sections.forEach(s=>{ if(s.topic==='sukti') s.items.forEach(it=>{ if(it.g==='shloka'){ mv[it.text]=1; it.g='sukti'; it.ts='sukti/sukti'; } }); }));
+  // ✓ ticks made while the sūktis were under श्लोकाः keep their state
+  try{ const d=JSON.parse(lsGet(LS('pqd'))||'{}'); let ch=0; Object.keys(d).forEach(k=>{ if(k.startsWith('shloka|')){ const r=k.slice(7);
+    if(Object.keys(mv).some(t=>t.replace(/<[^>]+>/g,'').replace(/[\s।॥!?,.:;'"\-–]/g,'').replace(/ऽ/g,'')===r)){ d['sukti|'+r]=1; delete d[k]; ch=1; } } }); if(ch) lsSet(LS('pqd'),JSON.stringify(d)); }catch(e){}
+  if(typeof ICP==='object'&&!ICP.sukti) ICP.sukti='<path d="M5 11h4v6H4v-4c0-3 1.5-5 4-6M15 11h4v6h-5v-4c0-3 1.5-5 4-6"/>';
+})();
+// सूक्तिसङ्ग्रहः: every sūkti asked in the papers once (variants with the same meaning merged), meaning in Sanskrit + Telugu, papers that asked it
+function skList(){ const m={}; D.papers.forEach(p=>p.sections.forEach(s=>s.items.forEach(it=>{ if(it.ts!=='sukti/sukti') return;
+    const k=it.ans||it.text; const x=(m[k]=m[k]||{it,texts:{},where:[]}); x.texts[it.text]=(x.texts[it.text]||0)+1; x.where.push(p.id); })));
+  return Object.values(m).map(x=>({...x,text:Object.entries(x.texts).sort((a,b)=>b[1]-a[1])[0][0]})).sort((a,b)=>b.where.length-a.where.length||a.text.localeCompare(b.text)); }
+function skPage(){
+  const L=skList(), tab=st.tab==='pq'?'pq':'sk', s=SUB['sukti/sukti'];
+  const tabs=[['sk','सूक्तिसङ्ग्रहः',L.length],['pq','पूर्वप्रश्नाः',pqItems('sukti','sukti/sukti').length]];
+  const body=tab==='pq'?pqList('sukti','sukti/sukti'):
+    `<div class="card"><p class="muted" style="margin:0">पूर्वप्रश्नपत्रेषु पृष्टाः सर्वाः सूक्तयः – अर्थेन सह (బహుసార్లు అడిగినవి ముందు). పరీక్షలో: "సూక్తిద్వయస్య వివరణం స్వభాషయా లిఖత" – ఇచ్చిన మూడింటిలో రెండు సూక్తులకు మీ భాషలో వివరణ (మొత్తం 2 మార్కులు; 2023 నుండి ప్రతి పత్రంలో వస్తోంది).</p></div>`+
+    L.map(x=>{ const k=pqKey(x.it), alt=Object.keys(x.texts).filter(t=>t!==x.text);
+      return `<div class="card sk pqi${pqd[k]?' pd':''}" style="display:block"><div style="display:flex;gap:.5rem;align-items:flex-start"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button>
+        <div class="tx" style="flex:1"><div class="skt">${x.text}</div>${alt.length?`<div class="muted" style="font-size:.85em">पाठभेदः: ${alt.join(' · ')}</div>`:''}
+        <div>${[...new Set(x.where)].map(w=>`<a class="chip hot" href="#p/${w}">${PAPER_SHORT(w)}</a>`).join('')}${x.where.length>1?` <b class="cnt">${dn(x.where.length)}×</b>`:''}</div>
+        <div class="ska"><b>अर्थः</b> ${esc(x.it.ans||'')}</div>${x.it.ate?`<div class="ska te">${esc(x.it.ate)}</div>`:''}</div></div></div>`; }).join('');
+  return `<h2 class="hi">${ico('sukti','big')}<span>${s.sa}<small>${GRP.sukti.sa} · ${s.te}</small></span></h2>
+   <div class="tabs" id="tabs">${tabs.map(t=>`<button data-t="${t[0]}" class="${tab===t[0]?'on':''}">${t[1]}<span class="n">${dn(t[2])}</span></button>`).join('')}
+   ${tab==='pq'?'<button class="mark" id="allans">सर्वाणि उत्तराणि</button>':''}<button class="mark ${done[st.sub]?'on':''}" id="mk">${done[st.sub]?'✓ अधीतम्':'अधीतम् इति अङ्कयतु'}</button></div>${body}`;
+}
+{ const _tp=topicPage; topicPage=function(){ return st.sub==='sukti/sukti'?skPage():_tp(); }; }
 // ================================================================ प्रश्नपत्राणि – विषयानुसारम् (2026-11-21): every old-paper question regrouped by Kovida topic (weekend अभ्यासः)
 const pqd=JSON.parse(lsGet(LS('pqd'))||'{}');
 const pqKey=it=>it.g+'|'+it.text.replace(/<[^>]+>/g,'').replace(/[\s।॥!?,.:;'"\-–]/g,'').replace(/ऽ/g,'');
 st.ptm=lsGet(LS('ptm'))||'f'; st.pth=lsGet(LS('pth'))==='1';
-// सूक्तयः: a topic of their own in the papers' by-topic view only (Charan, 2026-11-21). The data keeps them in shloka/pada (it.g='shloka'),
-// so the विषयाः pages, the marks analysis, flashcards, quiz and the ✓ keys (pqKey uses it.g) are unchanged.
-const PT_VG=[{id:'sukti',sa:'सूक्तयः',te:'సూక్తులు',after:'shloka',topic:'sukti',from:'shloka',subs:[]}], PT_SA={'shloka/pada':['पदविवरणम्, पाठप्रश्नाः','పదవివరణ, పాఠ ప్రశ్నలు']};
-D.papers.forEach(p=>p.sections.forEach(s=>PT_VG.forEach(v=>{ if(s.topic===v.topic) s.items.forEach(it=>{ if(it.g===v.from) it.vg=v.id; }); })));
-if(typeof ICP==='object'&&!ICP.sukti) ICP.sukti='<path d="M5 11h4v6H4v-4c0-3 1.5-5 4-6M15 11h4v6h-5v-4c0-3 1.5-5 4-6"/>';
-const ptTree=()=>D.tree.flatMap(g=>[g,...PT_VG.filter(v=>v.after===g.id)]);
-const ptGrp=g=>GRP[g]||PT_VG.find(v=>v.id===g);
-const ptG=it=>st.view==='papers'?(it.vg||it.g):it.g;
+const ptTree=()=>D.tree, ptGrp=g=>GRP[g], ptG=it=>it.g, PT_SA={};
 const ptIn=(it,g,sub)=>ptG(it)===g&&(!sub||it.ts===sub||(sub==='_'&&!(it.ts||'').startsWith(g+'/')));
 function ptAll(g,sub){ const o=[]; D.papers.forEach(p=>p.sections.forEach(s=>s.items.forEach(it=>{ if(ptIn(it,g,sub)) o.push({p,s,it}); }))); return o; }
 function ptStats(g,sub){ const a=ptAll(g,sub), u=new Set(a.map(x=>pqKey(x.it))); let d=0; u.forEach(k=>{if(pqd[k])d++;}); return {n:a.length,u:u.size,d}; }
@@ -2108,7 +2137,7 @@ function ptIndex(){
       <span class="m">${dn(x.n)} प्रश्नाः${ptSubs(g.id).length>1?' · '+dn(ptSubs(g.id).length)+' उपविषयाः':''}</span>${ptBar(x.d,x.u)}<span class="m">${ptProgTxt(x)}</span></a>`; }).join('')}</div>`;
 }
 function ptItem(it,p,showSub){ const k=pqKey(it);
-  return `<div class="pqi q${pqd[k]?' pd':''}"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button><span class="tx">${it.text}${ansBtn(it)}<br>${p?`<span class="chip">${esc(s_(p))}</span>`:''}${showSub&&!it.vg&&it.ts&&SUB[it.ts]?`<a class="chip" href="#p/t:${it.ts}">${(ptSubs(it.g).find(z=>z.id===it.ts)||SUB[it.ts]).sa}</a>`:''}${ansHtml(it)}</span></div>`; }
+  return `<div class="pqi q${pqd[k]?' pd':''}"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button><span class="tx">${it.text}${ansBtn(it)}<br>${p?`<span class="chip">${esc(s_(p))}</span>`:''}${showSub&&it.ts&&SUB[it.ts]?`<a class="chip" href="#p/t:${it.ts}">${(ptSubs(it.g).find(z=>z.id===it.ts)||SUB[it.ts]).sa}</a>`:''}${ansHtml(it)}</span></div>`; }
 function s_(p){ return PAPER_SHORT(p.id); }
 function ptPage(id){
   const g=id.split('/')[0], sub=id.includes('/')?(id.split('/')[1]==='_'?'_':id):null, G=ptGrp(g);
