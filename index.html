@@ -455,6 +455,54 @@ aside#side .sgh{font-size:.8rem;color:var(--mut);padding:.6rem .5rem .1rem;text-
 .card.sk .ska{margin-top:.35rem}
 .card.sk .ska.te{color:var(--mut)}
 .card.sk.pd{opacity:.75}
+
+.sk .skl{display:inline-block;font-size:.78em;font-weight:600;color:#1b2a4a;background:#E8C77A;border-radius:999px;padding:.05rem .55rem;margin-bottom:.25rem}
+/* अनुक्रमणिका (lesson index) 2026-11-21 */
+:root{--gold:#8a5a00;--goldbg:#fbf1d6}
+:root[data-theme="dark"]{--gold:#E8C77A;--goldbg:rgba(232,199,122,.14)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--gold:#E8C77A;--goldbg:rgba(232,199,122,.14)}}
+.ixh small{display:block}
+.ixnote{font-size:.85rem;margin:.2rem 0 .8rem}
+.ixcards{display:grid;gap:.75rem}
+.ixcard{padding:.8rem .85rem}
+.ixcard .ixl{display:flex;align-items:baseline;gap:.5rem;margin-bottom:.35rem}
+.ixcard .ixl b{font-size:1.05rem;color:var(--gold)}
+.ixsk{font-family:'Tiro Devanagari Sanskrit',serif;color:var(--gold);font-size:.95rem;margin:.1rem 0 .55rem;display:block;text-decoration:none}
+.ixchips{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.45rem}
+.ixcard{min-width:0;overflow:hidden}.ixchip span{overflow-wrap:anywhere}
+.ixchip{display:block;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:.4rem .55rem;background:var(--card);line-height:1.3;min-height:2.6rem}
+.ixchip small{display:block;font-size:.7rem;color:var(--mut);letter-spacing:.01em}
+.ixchip span{font-size:.85rem}
+.ixchip.no{opacity:.45;pointer-events:none}
+a.ixchip:active,a.ixchip:hover{border-color:var(--gold);background:var(--goldbg)}
+.ixtbl{display:none}
+@media (min-width:900px){
+  .ixcards{display:none}
+  .ixtbl{display:block;overflow-x:auto}
+  .ixtbl table{border-collapse:collapse;width:100%;font-size:.78rem;table-layout:fixed;min-width:860px}
+  .ixtbl td{overflow-wrap:anywhere}
+  .ixtbl th,.ixtbl td{border:1px solid var(--line);padding:.4rem .45rem;vertical-align:top;text-align:left}
+  .ixtbl thead th{background:var(--goldbg);color:var(--gold);font-weight:600;position:sticky;top:0}
+  .ixtbl th.ixn{color:var(--gold);font-size:1rem;text-align:center;width:2.4rem}
+  .ixtbl td a{color:var(--fg);text-decoration:none;display:block;border-radius:6px;padding:.1rem .2rem}
+  .ixtbl td a:hover{background:var(--goldbg);color:var(--gold)}
+  .ixtbl td .sk{font-family:'Tiro Devanagari Sanskrit',serif;color:var(--gold)}
+  .ixtbl td .d{color:var(--mut);text-align:center;display:block}
+}
+.ixban{display:flex;flex-wrap:wrap;gap:.4rem .8rem;align-items:center;background:var(--goldbg);border:1px solid var(--gold);border-radius:10px;padding:.45rem .7rem;margin:.2rem 0 .8rem;font-size:.88rem}
+.ixban b{color:var(--gold)}
+.ixban a{color:var(--gold);text-decoration:underline}
+/* ग्रन्थकाराः: every author name in gold; the one opened from the index flashes */
+.book .gk,.book.kavi strong,.book.kavi strong *,.book.kavi h4,.book.kavi h4 *{color:var(--gold)!important}
+.ixhit{background:var(--goldbg);outline:2px solid var(--gold);border-radius:6px;scroll-margin-top:90px}
+.sk.ixhit{outline-offset:2px}
+@media (min-width:900px){.ixtbl thead th:first-child{width:2.8rem;text-align:center}}
+
+/* links say where they land; names in the index stay plain (gold only inside विषयाः) */
+.ixto{display:block;font-style:normal;font-size:.72rem;color:var(--acc);text-decoration:underline;text-underline-offset:2px;margin-top:.2rem}
+div.ixchip a.ixto{padding:.1rem 0}
+.ixsk .ixto{display:inline;margin-left:.4rem}
+@media (min-width:900px){ .ixtbl td a.ixn{display:inline;color:var(--fg);text-decoration:underline;text-underline-offset:2px;padding:0} .ixtbl td a.ixto{display:block;color:var(--acc);font-size:.72rem;text-decoration:underline;padding:.1rem 0} }
 </style>
 <meta name="theme-color" content="#11224a">
 <meta name="description" content="Kovida Sādhanā – topic-wise Samskrita Bharati Kovida exam reader in Sanskrit and Telugu, with a word look-up (kosha)">
@@ -2101,17 +2149,23 @@ const stack=[]; let goingBack=false, prevHash=location.hash;
 // सूक्तिसङ्ग्रहः: every sūkti asked in the papers once (variants with the same meaning merged), meaning in Sanskrit + Telugu, papers that asked it
 function skList(){ const m={}; D.papers.forEach(p=>p.sections.forEach(s=>s.items.forEach(it=>{ if(it.ts!=='sukti/sukti') return;
     const k=it.ans||it.text; const x=(m[k]=m[k]||{it,texts:{},where:[]}); x.texts[it.text]=(x.texts[it.text]||0)+1; x.where.push(p.id); })));
-  return Object.values(m).map(x=>({...x,text:Object.entries(x.texts).sort((a,b)=>b[1]-a[1])[0][0]})).sort((a,b)=>b.where.length-a.where.length||a.text.localeCompare(b.text)); }
+  return Object.values(m).map(x=>({...x,text:Object.entries(x.texts).sort((a,b)=>b[1]-a[1])[0][0]})).map(x=>({...x,L:skLesson(x.text)})).concat(SK_X.map(e=>({it:{g:'sukti',text:e.text,ans:'',ate:e.ate},texts:{[e.text]:1},where:[],text:e.text,L:e.L}))).sort((a,b)=>a.L-b.L||b.where.length-a.where.length); }
+// each Kovida lesson opens with a सूक्तिः – order the sūktis by lesson (2026-11-21, Charan)
+const SK_L=[['भद्राः',1],['मितभाषिण',2],['महाजनस्य',3],['न्यायप्रवृत्त',4],['अलक्ष्मी',5],['आपत्काले',6],['यद्यदाचरति',7],['निसर्गः',8],['उद्धरेद',9],['योगिनः',10],['ज्ञानेन',11]];
+// lesson sūktis never asked in a paper (yet) – still listed, in their lesson's place
+const SK_X=[{L:10,text:'योगिनः कर्म कुर्वन्ति सङ्गं त्यक्त्वात्मशुद्धये।',ate:'యోగులు ఆసక్తిని వదిలేసి అంతఃకరణశుద్ధికోసం కర్మను ఆచరిస్తారు.'}];
+function skLessonText(L){ const x=skList().find(x=>x.L===L); return x?x.text.replace(/[।॥\s]+$/,''):''; }
+function skLesson(t){ const r=SK_L.find(([k])=>t.includes(k)); return r?r[1]:99; }
 function skPage(){
   const L=skList(), tab=st.tab==='pq'?'pq':'sk', s=SUB['sukti/sukti'];
   const tabs=[['sk','सूक्तिसङ्ग्रहः',L.length],['pq','पूर्वप्रश्नाः',pqItems('sukti','sukti/sukti').length]];
   const body=tab==='pq'?pqList('sukti','sukti/sukti'):
-    `<div class="card"><p class="muted" style="margin:0">पूर्वप्रश्नपत्रेषु पृष्टाः सर्वाः सूक्तयः – अर्थेन सह (బహుసార్లు అడిగినవి ముందు). పరీక్షలో: "సూక్తిద్వయస్య వివరణం స్వభాషయా లిఖత" – ఇచ్చిన మూడింటిలో రెండు సూక్తులకు మీ భాషలో వివరణ (మొత్తం 2 మార్కులు; 2023 నుండి ప్రతి పత్రంలో వస్తోంది).</p></div>`+
+    `<div class="card"><p class="muted" style="margin:0">पूर्वप्रश्नपत्रेषु पृष्टाः सर्वाः सूक्तयः – अर्थेन सह (కోవిద పాఠాల క్రమంలో: ప్రతి పాఠం ఒక సూక్తితో మొదలవుతుంది). పరీక్షలో: "సూక్తిద్వయస్య వివరణం స్వభాషయా లిఖత" – ఇచ్చిన మూడింటిలో రెండు సూక్తులకు మీ భాషలో వివరణ (మొత్తం 2 మార్కులు; 2023 నుండి ప్రతి పత్రంలో వస్తోంది).</p></div>`+
     L.map(x=>{ const k=pqKey(x.it), alt=Object.keys(x.texts).filter(t=>t!==x.text);
-      return `<div class="card sk pqi${pqd[k]?' pd':''}" style="display:block"><div style="display:flex;gap:.5rem;align-items:flex-start"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button>
-        <div class="tx" style="flex:1"><div class="skt">${x.text}</div>${alt.length?`<div class="muted" style="font-size:.85em">पाठभेदः: ${alt.join(' · ')}</div>`:''}
-        <div>${[...new Set(x.where)].map(w=>`<a class="chip hot" href="#p/${w}">${PAPER_SHORT(w)}</a>`).join('')}${x.where.length>1?` <b class="cnt">${dn(x.where.length)}×</b>`:''}</div>
-        <div class="ska"><b>अर्थः</b> ${esc(x.it.ans||'')}</div>${x.it.ate?`<div class="ska te">${esc(x.it.ate)}</div>`:''}</div></div></div>`; }).join('');
+      return `<div class="card sk pqi${pqd[k]?' pd':''}" data-skl="${x.L}" style="display:block"><div style="display:flex;gap:.5rem;align-items:flex-start"><button class="pk" data-pk="${esc(k)}" title="అభ్యాసం చేశాను / తీసివేయి" aria-label="practised">✓</button>
+        <div class="tx" style="flex:1"><div class="skl">${x.L<99?`पाठः ${dn(x.L)}`:'अन्यत्र'}</div><div class="skt">${x.text}</div>${alt.length?`<div class="muted" style="font-size:.85em">पाठभेदः: ${alt.join(' · ')}</div>`:''}
+        <div>${[...new Set(x.where)].map(w=>`<a class="chip hot" href="#p/${w}">${PAPER_SHORT(w)}</a>`).join('')}${x.where.length>1?` <b class="cnt">${dn(x.where.length)}×</b>`:''}${x.where.length?'':'<span class="chip">न पृष्टम्</span>'}</div>
+        ${x.it.ans?`<div class="ska"><b>अर्थः</b> ${esc(x.it.ans)}</div>`:''}${x.it.ate?`<div class="ska te">${esc(x.it.ate)}</div>`:''}</div></div></div>`; }).join('');
   return `<h2 class="hi">${ico('sukti','big')}<span>${s.sa}<small>${GRP.sukti.sa} · ${s.te}</small></span></h2>
    <div class="tabs" id="tabs">${tabs.map(t=>`<button data-t="${t[0]}" class="${tab===t[0]?'on':''}">${t[1]}<span class="n">${dn(t[2])}</span></button>`).join('')}
    ${tab==='pq'?'<button class="mark" id="allans">सर्वाणि उत्तराणि</button>':''}<button class="mark ${done[st.sub]?'on':''}" id="mk">${done[st.sub]?'✓ अधीतम्':'अधीतम् इति अङ्कयतु'}</button></div>${body}`;
@@ -2181,6 +2235,95 @@ document.addEventListener('click',e=>{ const t=e.target.closest('button'); if(!t
   if(t.dataset.ptm){ st.ptm=t.dataset.ptm; lsSet(LS('ptm'),st.ptm); render(); e.stopPropagation(); return; }
   if(t.id==='pth'){ st.pth=!st.pth; lsSet(LS('pth'),st.pth?'1':'0'); render(); e.stopPropagation(); return; }
 },true);
+
+// ================================================================ अनुक्रमणिका (2026-11-21, Charan): textbook lesson index → exact lesson part of विषयाः
+const IX_COLS=[['सूक्तयः','सूक्तिः'],['व्याकरणविषयाः-१','व्याकरणम्-१'],['व्याकरणविषयाः-२','व्याकरणम्-२'],['सुभाषितानि','सुभाषितानि'],['काव्यकथा','काव्यकथा'],['श्लोकेषु अन्वयक्रमः','अन्वयक्रमः'],['संस्कृतसाहित्यपरिचयः','साहित्यम्'],['संस्कृतग्रन्थकारपरिचयः','ग्रन्थकाराः']];
+// [c2 व्याकरणम्-१, c3 व्याकरणम्-२, c5 काव्यकथा, c7 साहित्यम्, c8 heading, c8 names] as in Charan's handwritten index
+const IX_TXT={
+1:['समासपरिचयः','तद्धितान्ताः – १','कुमारसम्भवम् (कालिदासविरचितम्) … मन्मथः एव समर्थः','नाटकम् – अभिज्ञानशाकुन्तलम्','',['वाल्मीकिः','व्यासः']],
+2:['समासः – तत्पुरुषः, नञ्समासः','तद्धितान्ताः – २','इन्द्रेण स्मृतः मन्मथः … वसन्तः अपि समाधानम् उक्तवान्','गद्यकाव्यम्','व्याकरणशास्त्रज्ञाः',['पाणिनिः','कात्यायनः','पतञ्जलिः','भट्टोजिदीक्षितः','नागेशभट्टः']],
+3:['समासः – कर्मधारयः','तद्धितान्ताः – ३','मन्मथं दग्ध्वा … महापुरुषाणां निन्दा न श्रोतव्या','इतिहासः','ज्योतिःशास्त्रज्ञाः',['आर्यभटः','वराहमिहिरः','ब्रह्मगुप्तः','भास्कराचार्यः']],
+4:['द्विगुसमासः, द्वन्द्वसमासः','णिच्-प्रत्ययः','ईश्वरः कन्यायाचनार्थं … शरवणे कुमारस्य जन्म अभवत्','संस्कृतकवयित्र्यः','कवयित्र्यः',['विज्जिका','तिरुमलाम्बा','रामभद्राम्बा','गङ्गादेवी','देवकुमारिका','क्षमाराव्']],
+5:['बहुव्रीहिसमासः','सन्-प्रत्ययः','यदा कुमारः जातः तदा गङ्गा परिपालितवती … सर्वत्र मङ्गलम् अभवत्','चम्पूग्रन्थाः','चम्पूकाराः',['भोजदेवः','अनन्तभट्टः','त्रिविक्रमभट्टः','नीलकण्ठदीक्षितः','वेङ्कटाध्वरी']],
+6:['अव्ययीभावसमासः, सर्वसमासनियमाः','अलङ्काराः – शब्दालङ्कारः, उपमा','नैषधीयचरितम् (श्रीहर्षः) … नलदमयन्त्योः विवाहकार्याय हंसः','भारतीयदर्शनानि','सूत्रकाराः',['गौतमः','कणादः','जैमिनिः','बादरायणः','भरतः']],
+7:['समासः – सूचनानि','अलङ्काराः – रूपकम्, अतिशयोक्तिः, अर्थान्तरन्यासः, श्लेषः','उपवनात् प्रस्थितः हंसः विदर्भदेशं प्राप्तवान् … नलः मायाशरीरेण','खण्डकाव्यानि दूतकाव्यानि च','',['कालिदासः','भारविः','माघः','श्रीहर्षः']],
+8:['समासः – दीर्घसमासाः (द्व्यधिकपदानि)','छन्दः – १','इन्द्रादिभिः देवैः प्रेषितः नलः … "स्वयंवरार्थं भवान् अपि आगच्छतु"','नीतिकाव्यानि स्तोत्रकाव्यानि च','कथाकाराः',['क्षेमेन्द्रः','प्रकाशेन्द्रः','सोमदेवः','विष्णुशर्मा','नारायणभट्टः']],
+9:['समासः – समस्तपदम् + समस्तपदम्','छन्दः – २','दमयन्त्याः पिता भीमराजः … स्वयंवरविधिः सम्पादितः अभवत्','संस्कृतकोषसाहित्यम्','नाटककाराः',['अश्वघोषः','भासः','भवभूतिः','शूद्रकः','भट्टनारायणः']],
+10:['समासः – विशेषनियमाः','णत्वम्','स्वयंवरविधेः अनन्तरं … बहुकालं राज्यशासनम् अकरोत्','आधुनिकं संस्कृतसाहित्यम्, संस्कृतपत्रिकाः','गद्यकाराः',['सुबन्धुः','बाणः','दण्डी','धनपालः']],
+11:['प्रबन्धरचना','पत्रलेखनम्',null,null,'',[]]};
+const ixBook=L=>L<11?D.book.slice((L-1)*5,(L-1)*5+5):[D.book[50],D.book[51]];
+const ixBookL=x=>{ const i=D.book.indexOf(x); return i<50?Math.floor(i/5)+1:11; };
+const ixH=(sub,L,tab,name)=>`#t/${sub}~${tab||''}~~L${L}${name?'~'+name:''}`;
+const ixVerse=v=>{ const w=v.lines[0].replace(/\{\d+\}/g,'').replace(/[।॥|]/g,'').trim().split(/\s+/).slice(0,3).join(' '); return `${v.src.replace(/^[^\s]+\s/,'')}. ${w}…`; };
+function ixRow(L){
+  const t=IX_TXT[L], b=ixBook(L), sk=(typeof skLessonText==='function')?skLessonText(L):'';
+  const vs=sec=>D.verses.filter(v=>v.L===L&&v.sec===sec);
+  const lk=(subs,tab)=>subs.map(u=>({h:ixH(u,L,tab),g:GRP[SUB[u].g].sa,s:SUB[u].sa}));
+  const c=[];
+  c.push(sk?{t:sk,links:lk(['sukti/sukti'],'sk'),sk:1}:null);
+  c.push(t[0]?{t:t[0],links:lk(b[0].subs)}:null);
+  c.push(t[1]?{t:t[1],links:lk(b[1].subs)}:null);
+  const s=vs('subh'); c.push(s.length?{t:s.map(ixVerse).join('<br>'),links:lk(['shloka/subh'],'verses')}:null);
+  c.push(t[2]&&b[2]?{t:t[2],links:lk(b[2].subs)}:null);
+  const r=vs('raghu'); c.push(r.length?{t:(L===1?'परिचयः<br>':'')+r.map(ixVerse).join('<br>'),links:lk(['shloka/raghu'],'verses')}:null);
+  c.push(t[3]&&b[3]?{t:t[3],links:lk(b[3].subs)}:null);
+  c.push(t[5]&&t[5].length&&b[4]?{t:(t[4]?t[4]+': ':'')+t[5].join(', '),links:lk(b[4].subs),names:t[5],hd:t[4],sub:b[4].subs[0]}:null);
+  return c;
+}
+// a link names where it lands: विषयः › उपविषयः
+const ixTo=l=>`<a class="ixto" href="${l.h}">→ ${l.g} › ${l.s}</a>`;
+function ixPage(){
+  const Ls=[1,2,3,4,5,6,7,8,9,10,11], rows=Ls.map(ixRow);
+  const lab=c=>c.names?(c.hd||'ग्रन्थकाराः')+' ('+dn(c.names.length)+')':c.t.replace(/<br>/g,' · ');
+  const chip=(c,j)=>!c?`<span class="ixchip no"><small>${IX_COLS[j][1]}</small><span>—</span></span>`
+    :c.links.length===1?`<a class="ixchip" href="${c.links[0].h}"><small>${IX_COLS[j][1]}</small><span>${lab(c)}</span><em class="ixto">→ ${c.links[0].g} › ${c.links[0].s}</em></a>`
+    :`<div class="ixchip"><small>${IX_COLS[j][1]}</small><span>${lab(c)}</span>${c.links.map(ixTo).join('')}</div>`;
+  const cards=Ls.map((L,i)=>{ const r=rows[i];
+    return `<div class="card ixcard"><div class="ixl"><b>पाठः ${dn(L)}</b><span class="muted">పాఠం ${L}</span></div>
+      ${r[0]?`<a class="ixsk" href="${r[0].links[0].h}">॥ ${r[0].t} ॥<em class="ixto">→ सूक्तयः</em></a>`:''}
+      <div class="ixchips">${r.slice(1).map((c,j)=>chip(c,j+1)).join('')}</div></div>`; }).join('');
+  const cell=c=>!c?'<span class="d">—</span>'
+    :c.names?`${c.hd?`<span>${c.hd}:</span> `:''}${c.names.map(n=>`<a class="ixn" href="${ixH(c.sub,L_,'',n)}">${n}</a>`).join(', ')}${c.links.map(ixTo).join('')}`
+    :`<span${c.sk?' class="sk"':''}>${c.t}</span>${c.links.map(ixTo).join('')}`;
+  let L_=0;
+  const tbl=`<div class="ixtbl card"><table><thead><tr><th>पाठः</th>${IX_COLS.map((c,j)=>`<th>${dn(j+1)}. ${c[0]}</th>`).join('')}</tr></thead><tbody>${
+    Ls.map((L,i)=>{ L_=L; return `<tr><th class="ixn">${dn(L)}</th>${rows[i].map(c=>`<td>${cell(c)}</td>`).join('')}</tr>`; }).join('')}</tbody></table></div>`;
+  return `<h2 class="hi ixh"><span>अनुक्रमणिका<small>కోవిద పాఠ్యపుస్తక సూచిక · Lesson index</small></span></h2>
+   <p class="muted ixnote">ప్రతి లింకు విషయాః లో ఆ విషయం › ఉపవిషయానికి వెళ్తుంది, ఆ పాఠం భాగం మాత్రమే చూపిస్తుంది.</p><div class="ixcards">${cards}</div>${tbl}`;
+}
+// views: route, side, page
+{ const _r=route; route=function(){ const h=decodeURIComponent(location.hash.slice(1));
+    if(h==='ix'){ st.view='ix'; st.L=null; render(); window.scrollTo(0,0); sideOpen(false,true); return; }
+    const m=h.startsWith('t/')&&h.match(/~L(\d+)(?:~(.+))?$/); st.L=m?+m[1]:null; st.ixn=m&&m[2]||null; _r(); }; }
+{ const _s=side; side=function(){ if(st.view!=='ix') return _s();
+    $('#side').innerHTML=`<div class="g"><div class="gh">अनुक्रमणिका<small>పాఠ్యపుస్తక సూచిక</small></div>${[1,2,3,4,5,6,7,8,9,10,11].map(L=>`<a href="#ix" data-ixl="${L}">पाठः ${dn(L)}${typeof skLessonText==='function'&&skLessonText(L)?`<small>${skLessonText(L)}</small>`:''}</a>`).join('')}</div>`; }; }
+{ const _a=anaPage; anaPage=function(){ return st.view==='ix'?ixPage():_a(); }; }
+document.addEventListener('click',e=>{ const a=e.target.closest('[data-ixl]'); if(!a||st.view!=='ix') return; e.preventDefault(); sideOpen(false);
+  const c=document.querySelectorAll('.ixcard')[a.dataset.ixl-1], r=document.querySelectorAll('.ixtbl tbody tr')[a.dataset.ixl-1]; const el=(c&&c.offsetParent)?c:r; if(el) el.scrollIntoView({behavior:'smooth',block:'start'}); },true);
+// विषयाः page opened from the index: only that lesson's part (पुस्तकम्, श्रीविद्या, श्लोकाः), author names in gold
+{ const _tp=topicPage; topicPage=function(){
+    if(st.view!=='topic'||!st.L) return ixGold(_tp());
+    const L=st.L, keep={book:D.book,slides:D.slides,verses:D.verses,abh:D.abh};
+    D.book=D.book.filter(x=>ixBookL(x)===L); D.slides=D.slides.filter(x=>{const m=x.id.match(/^kv-(\d+)-/); return m&&+m[1]===L;});
+    D.verses=D.verses.filter(v=>v.L===L); D.abh=[];
+    let h; try{ h=_tp(); } finally { Object.assign(D,keep); }
+    const s=SUB[st.sub];
+    const ban=`<div class="ixban"><span>📖 <b>पाठः ${dn(L)}</b> – ${s?s.sa:''}: అనుక్రమణిక నుండి, ఈ పాఠం భాగం మాత్రమే</span><a href="#ix">← अनुक्रमणिका</a><a href="#t/${st.sub}">सम्पूर्णविषयः ➜</a></div>`;
+    h=ixGold(h).replace(/(<div class="tabs")/,ban+'$1');
+    setTimeout(ixFocus,30); return h; }; }
+function ixGold(h){ if(!(st.sub||'').startsWith('sahitya/')) return h;
+  return h.replace(/<div class="card book">/g,'<div class="card book kavi">').replace(/(पिता )(प्रकाशेन्द्रः)/,'$1<b class="gk" data-gk="प्रकाशेन्द्रः">$2</b>'); }
+function ixFocus(){
+  let el=null;
+  if(st.sub==='sukti/sukti') el=document.querySelector(`.sk[data-skl="${st.L}"]`);
+  else if(st.ixn){ const n=st.ixn.replace(/[ःी]$/,''); el=[...document.querySelectorAll('.book.kavi strong,.book.kavi h4,.book .gk')].find(x=>x.textContent.trim().replace(/[\s–-]+$/,'').startsWith(n)); if(el&&el.tagName==='STRONG') el=el.closest('p')||el; }
+  if(el){ el.classList.add('ixhit'); el.scrollIntoView({behavior:'smooth',block:'start'}); }
+}
+// nav button (first in the bar)
+(function(){ const nav=$('#top'); if(!nav||nav.querySelector('[data-v="ix"]')) return;
+  const b=document.createElement('button'); b.dataset.v='ix';
+  b.innerHTML=`<span class="ni">${SVG('<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>')}</span><span class="nl">अनुक्रमणिका</span><span class="ns">सूची</span>`;
+  nav.insertBefore(b,nav.firstChild); })();
 
 window.addEventListener('hashchange',()=>{ if(goingBack) goingBack=false; else if(prevHash) stack.push(prevHash.slice(1)); prevHash=location.hash; route(); });
 if(!location.hash){goingBack=true;location.hash='t/samasa/parichaya';} else route();
