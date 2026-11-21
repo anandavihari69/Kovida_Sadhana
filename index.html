@@ -392,6 +392,24 @@ aside#side a.brand{display:flex;padding:.7rem .6rem}
   #gear{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.25);color:#fff}
 }
 .pk-tab .ko-par td,.pk-tab .ko-par th{padding:.15rem .5rem}.pk-tab .ko-chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:.4rem 0}
+/* ===== reading colours A (2026-11-21): on the dark navy theme, cream body text, soft gold headings/verses, saffron key words ===== */
+@media (prefers-color-scheme:dark){
+  :root{--fg:#F5EEDC;--acc:#E8C77A;--gold:#E8C77A;--gold2:#E8C77A;--saff:#F4A261}
+  /* Srividya slides (and book / answers that reuse them): red, blue, green, purple, orange marks */
+  .kr,.ko{color:var(--saff)}
+  .kb{color:var(--acc)}
+  .kg{color:var(--fg);font-weight:600}
+  .kp{color:var(--acc);font-style:italic}
+  .slide blockquote,.slide .note{color:var(--acc)}
+  .ed{color:var(--mut)}
+  /* Kosha pop-up labels that were dark orange */
+  html .ko-un{color:var(--saff);background:rgba(244,162,97,.13)}
+  html .ko-x2{color:var(--saff)}
+  /* verse text outside the coloured anvaya view */
+  .fc .fw.long,.chs .chl{color:var(--acc)}
+}
+/* quiz topic buttons: the count stayed grey on the selected (filled) button */
+.qzset button.on .muted{color:inherit;opacity:.8}
 </style>
 <meta name="theme-color" content="#11224a">
 <meta name="description" content="Kovida Sādhanā – topic-wise Samskrita Bharati Kovida exam reader in Sanskrit and Telugu, with a word look-up (kosha)">
